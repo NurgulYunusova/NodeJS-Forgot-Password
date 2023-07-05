@@ -8,7 +8,10 @@ import { Verify } from "./pages/Verify";
 import ProtectedRoute from "./pages/Auth/ProtectedRoute";
 import { io } from "socket.io-client";
 import { ForgotPassword } from "./pages/Auth/ForgotPassword";
+import PasswordReset from "./pages/Auth/PasswordReset";
+
 export const socket = io("http://localhost:8080");
+
 function App() {
   return (
     <Routes>
@@ -25,6 +28,7 @@ function App() {
         <Route path="/signup" element={<RegisterPage />} />
         <Route path="/verify" element={<Verify />}></Route>
         <Route path="/forgotPassword" element={<ForgotPassword />}></Route>
+        <Route path="/changePassword" element={<PasswordReset />}></Route>
       </Route>
     </Routes>
   );

@@ -8,6 +8,7 @@ webUserRoutes.post("/confirm", webUserController.confirm);
 webUserRoutes.post("/login", webUserController.login);
 webUserRoutes.post("/token", webUserController.token);
 webUserRoutes.post("/forgotPassword", webUserController.forgotPassword);
+webUserRoutes.put("/resetPassword", webUserController.resetPassword);
 
 module.exports = {
   webUserRoutes,

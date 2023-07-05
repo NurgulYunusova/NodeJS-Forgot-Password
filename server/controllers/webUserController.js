@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 var jwt = require("jsonwebtoken");
 const moment = require("moment");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 
 let privateKey = "ironmaiden";
 
@@ -120,6 +121,38 @@ const webUserController = {
         res.status(500).json({ error: "Internal Server Error" });
       });
   },
+  resetPassword: async (req, res) => {
+    const { userId, token, newPassword } = req.body;
+
+    try {
+      const user = await WebUser.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (user.resetPasswordToken !== token) {
+        return res.status(400).json({ message: "Invalid token" });
+      }
+
+      if (new Date() > user.resetPasswordExpiration) {
+        return res.status(400).json({ message: "Token has expired" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      user.password = hashedPassword;
+      user.resetPasswordToken = null;
+      user.resetPasswordExpiration = null;
+
+      await user.save();
+
+      res.json({ message: "Password reset successful" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
   token: (req, res) => {
     let token = req.body.token;
 
@@ -161,7 +194,7 @@ function sendPasswordResetEmail(email, token, user) {
   transporter.sendMail({
     from: "c8657545@gmail.com",
     to: email,
-    subject: "Password Reset",
+    subject: "Reset Your Password",
     text: `To reset your password, click the following link: ${resetLink}`,
   });
 }
